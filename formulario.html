@@ -3,469 +3,914 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Santuário do Mestre - IA RPG</title>
 
 <style>
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Montserrat:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root{
-    --bg-color:#120c06;
-    --panel-bg:rgba(26,18,10,0.95);
-    --border-gold:#c5a059;
-    --text-main:#e6dfd3;
-    --text-accent:#ff4500;
+    --bg:#07090c;
+    --bg-soft:#0d1118;
+    --panel:rgba(16,18,24,0.86);
+    --panel-strong:rgba(22,24,31,0.96);
+    --line:rgba(221,180,103,0.22);
+    --line-strong:rgba(221,180,103,0.48);
+    --gold:#ddb467;
+    --gold-soft:#f3d99b;
+    --ember:#c85c3d;
+    --ember-strong:#ef7b54;
+    --teal:#5db6aa;
+    --ink:#f7efe1;
+    --muted:#a7a095;
+    --muted-strong:#cfc5b2;
+    --shadow:0 24px 80px rgba(0,0,0,0.48);
+    --radius:8px;
+    --fast:160ms ease;
 }
 
-body{
-    background:#120c06;
-    color:#e6dfd3;
-    font-family:'Montserrat',sans-serif;
-    margin:0;
-    padding:20px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    background-image:radial-gradient(circle,#2c1d11 0%,#120c06 100%);
-}
-
-.rpg-container{
-    width:100%;
-    max-width:1000px;
-    background:rgba(26,18,10,0.95);
-    border:3px double #c5a059;
-    border-radius:8px;
-    padding:25px;
+*{
     box-sizing:border-box;
 }
 
-header{
-    text-align:center;
-    border-bottom:2px solid #c5a059;
-    padding-bottom:15px;
-    margin-bottom:20px;
+html{
+    min-height:100%;
+    background:var(--bg);
 }
 
-header h1{
-    font-family:'Cinzel Decorative',serif;
-    color:#c5a059;
+body{
+    min-height:100vh;
     margin:0;
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    letter-spacing:0;
+    background:
+        linear-gradient(115deg,rgba(93,182,170,0.08),transparent 30%),
+        radial-gradient(circle at 82% 18%,rgba(200,92,61,0.18),transparent 28%),
+        radial-gradient(circle at 12% 86%,rgba(221,180,103,0.13),transparent 30%),
+        linear-gradient(180deg,#090b10 0%,#07090c 48%,#0a0b0d 100%);
 }
 
-header p{
-    color:#aaa;
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,0.78),transparent 82%);
 }
 
-.main-content{
+button,
+select,
+input,
+textarea{
+    font:inherit;
+}
+
+button{
+    border:0;
+}
+
+.rpg-shell{
+    width:min(1440px,100%);
+    min-height:100vh;
+    margin:0 auto;
+    padding:28px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    gap:24px;
+    align-items:flex-start;
+    padding:8px 4px 0;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.brand-mark{
+    width:52px;
+    height:52px;
+    border:1px solid var(--line-strong);
+    border-radius:50%;
     display:grid;
-    grid-template-columns:1fr 3fr;
+    place-items:center;
+    color:var(--gold-soft);
+    background:
+        radial-gradient(circle at 50% 40%,rgba(243,217,155,0.22),transparent 58%),
+        linear-gradient(145deg,rgba(221,180,103,0.18),rgba(93,182,170,0.08));
+    box-shadow:0 0 32px rgba(221,180,103,0.16), inset 0 0 18px rgba(221,180,103,0.08);
+    flex:0 0 auto;
+}
+
+.brand-mark svg{
+    width:28px;
+    height:28px;
+}
+
+.brand h1{
+    margin:0;
+    font-family:'Cinzel',Georgia,serif;
+    font-size:clamp(28px,3vw,44px);
+    line-height:1;
+    letter-spacing:0;
+}
+
+.brand p{
+    margin:8px 0 0;
+    color:var(--muted);
+    font-size:15px;
+}
+
+.status-strip{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    max-width:600px;
+}
+
+.status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:34px;
+    padding:0 12px;
+    border:1px solid rgba(93,182,170,0.26);
+    border-radius:999px;
+    background:rgba(93,182,170,0.08);
+    color:#d5fffa;
+    font-size:13px;
+    font-weight:600;
+}
+
+.status-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--teal);
+    box-shadow:0 0 16px rgba(93,182,170,0.8);
+}
+
+.status-pill.is-warn{
+    border-color:rgba(200,92,61,0.34);
+    background:rgba(200,92,61,0.09);
+    color:#ffd6c9;
+}
+
+.status-pill.is-warn .status-dot{
+    background:var(--ember-strong);
+    box-shadow:0 0 16px rgba(239,123,84,0.72);
+}
+
+.layout{
+    flex:1;
+    display:grid;
+    grid-template-columns:minmax(260px,330px) minmax(0,1fr);
+    gap:18px;
+    min-height:0;
+}
+
+.control-rail,
+.story-panel{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(24,25,31,0.94),rgba(10,12,16,0.92));
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+}
+
+.control-rail::before,
+.story-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.control-rail{
+    padding:22px;
+    display:flex;
+    flex-direction:column;
     gap:20px;
 }
 
-.sidebar{
-    border-right:1px dashed #c5a059;
-    padding-right:20px;
+.section-title{
+    margin:0;
+    color:var(--gold-soft);
+    font-family:'Cinzel',Georgia,serif;
+    font-size:20px;
+    line-height:1.2;
 }
 
-.sidebar h3{
-    color:#c5a059;
+.section-note{
+    margin:7px 0 0;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+}
+
+.field-stack{
+    display:grid;
+    gap:15px;
 }
 
 .form-group{
-    margin-bottom:15px;
+    display:grid;
+    gap:7px;
 }
 
 .form-group label{
-    display:block;
-    margin-bottom:5px;
+    color:var(--muted-strong);
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0;
+}
+
+.form-group select,
+.form-group input,
+.input-area textarea{
+    width:100%;
+    color:var(--ink);
+    border:1px solid rgba(221,180,103,0.28);
+    border-radius:var(--radius);
+    background:rgba(3,5,8,0.58);
+    outline:none;
+    transition:border-color var(--fast),box-shadow var(--fast),background var(--fast);
 }
 
 .form-group select,
 .form-group input{
+    height:44px;
+    padding:0 12px;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.input-area textarea:focus{
+    border-color:rgba(221,180,103,0.72);
+    box-shadow:0 0 0 3px rgba(221,180,103,0.11);
+    background:rgba(8,10,14,0.82);
+}
+
+.primary-button,
+.send-button{
+    min-height:44px;
+    border-radius:var(--radius);
+    color:#160b06;
+    background:linear-gradient(135deg,var(--gold-soft),#d89b51 58%,var(--ember-strong));
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 12px 32px rgba(200,92,61,0.22);
+    transition:transform var(--fast),filter var(--fast),box-shadow var(--fast);
+}
+
+.primary-button{
     width:100%;
-    background:#2a1a0e;
-    border:1px solid #c5a059;
-    color:white;
-    padding:8px;
-    box-sizing:border-box;
 }
 
-.chat-area{
-    display:flex;
-    flex-direction:column;
-    height:550px;
+.primary-button:hover,
+.send-button:hover{
+    filter:brightness(1.07);
+    transform:translateY(-1px);
+    box-shadow:0 16px 38px rgba(200,92,61,0.28);
 }
 
-.chat-log{
-    flex:1;
-    background:rgba(0,0,0,0.4);
-    border:1px solid #c5a059;
-    padding:15px;
-    overflow-y:auto;
-    margin-bottom:15px;
-
-    font-family:'Segoe UI',sans-serif;
-    font-size:16px;
-    line-height:1.7;
+.primary-button:disabled,
+.send-button:disabled{
+    cursor:not-allowed;
+    filter:saturate(0.4) brightness(0.82);
+    transform:none;
+    box-shadow:none;
 }
 
-.message{
-    margin-bottom:15px;
-    padding:10px;
+.campaign-card{
+    margin-top:auto;
+    border:1px solid rgba(93,182,170,0.22);
+    border-radius:var(--radius);
+    background:
+        linear-gradient(135deg,rgba(93,182,170,0.12),transparent 48%),
+        rgba(5,7,10,0.62);
+    padding:16px;
 }
 
-.message.ia{
-    background:rgba(197,160,89,0.08);
-    border-left:3px solid #c5a059;
+.campaign-card h3{
+    margin:0 0 12px;
+    color:#d8fffa;
+    font-size:14px;
 }
 
-.message.player{
-    background:rgba(255,69,0,0.08);
-    border-left:3px solid #ff4500;
-}
-
-.speaker{
-    display:block;
-    font-weight:bold;
-    margin-bottom:6px;
-}
-
-.message.ia .speaker{
-    color:#c5a059;
-}
-
-.message.player .speaker{
-    color:#ff4500;
-}
-
-.input-area{
-    display:flex;
+.summary-list{
+    display:grid;
     gap:10px;
 }
 
-.input-area textarea{
+.summary-item{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.summary-item strong{
+    color:var(--ink);
+    font-weight:700;
+    text-align:right;
+}
+
+.story-panel{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+}
+
+.story-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:18px;
+    padding:22px 24px 16px;
+    border-bottom:1px solid rgba(221,180,103,0.16);
+    background:
+        linear-gradient(90deg,rgba(221,180,103,0.08),transparent 42%),
+        rgba(255,255,255,0.012);
+}
+
+.story-title-group h2{
+    margin:0;
+    font-size:20px;
+    line-height:1.25;
+}
+
+.story-title-group p{
+    margin:7px 0 0;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.tone-meter{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#d5fffa;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    white-space:nowrap;
+}
+
+.meter-bars{
+    display:flex;
+    gap:4px;
+    align-items:end;
+    height:18px;
+}
+
+.meter-bars span{
+    width:5px;
+    border-radius:5px 5px 0 0;
+    background:linear-gradient(180deg,var(--teal),rgba(93,182,170,0.35));
+}
+
+.meter-bars span:nth-child(1){height:7px;}
+.meter-bars span:nth-child(2){height:11px;}
+.meter-bars span:nth-child(3){height:15px;}
+
+.chat-log{
     flex:1;
-    resize:none;
-    height:60px;
-    background:#2a1a0e;
-    color:white;
-    border:1px solid #c5a059;
-    padding:10px;
+    min-height:420px;
+    overflow:auto;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    scroll-behavior:smooth;
 }
 
-.input-area button{
-    background:#6e1313;
-    border:1px solid #c5a059;
-    color:white;
-    padding:0 25px;
-    cursor:pointer;
-    font-size:18px;
+.message{
+    width:min(780px,100%);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:var(--radius);
+    padding:16px 17px;
+    line-height:1.65;
+    color:var(--ink);
+    background:rgba(255,255,255,0.045);
 }
 
-.input-area button:hover{
-    opacity:0.9;
+.message.ia{
+    align-self:flex-start;
+    border-color:rgba(221,180,103,0.24);
+    background:
+        linear-gradient(135deg,rgba(221,180,103,0.11),transparent 55%),
+        rgba(255,255,255,0.04);
+}
+
+.message.player{
+    align-self:flex-end;
+    border-color:rgba(93,182,170,0.28);
+    background:
+        linear-gradient(135deg,rgba(93,182,170,0.12),transparent 60%),
+        rgba(255,255,255,0.04);
+}
+
+.message.error{
+    border-color:rgba(200,92,61,0.42);
+    background:rgba(200,92,61,0.1);
+}
+
+.speaker{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+    color:var(--gold-soft);
+    font-size:13px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.player .speaker{
+    color:#bff9f2;
+}
+
+.message-text{
+    white-space:pre-wrap;
+}
+
+.message-meta{
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.input-area{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 136px;
+    gap:12px;
+    padding:18px 24px 24px;
+    border-top:1px solid rgba(221,180,103,0.16);
+    background:rgba(3,5,8,0.44);
+}
+
+.input-area textarea{
+    min-height:70px;
+    max-height:180px;
+    resize:vertical;
+    padding:14px;
+    line-height:1.5;
+}
+
+.send-button{
+    align-self:stretch;
+}
+
+.sr-only{
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
 }
 
 ::-webkit-scrollbar{
-    width:8px;
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:rgba(255,255,255,0.03);
 }
 
 ::-webkit-scrollbar-thumb{
-    background:#c5a059;
+    background:rgba(221,180,103,0.45);
+    border-radius:999px;
+    border:2px solid rgba(3,5,8,0.9);
 }
 
-@media(max-width:768px){
+@media (max-width:980px){
+    .rpg-shell{
+        padding:18px;
+    }
 
-    .main-content{
+    .topbar{
+        flex-direction:column;
+    }
+
+    .status-strip{
+        justify-content:flex-start;
+    }
+
+    .layout{
         grid-template-columns:1fr;
     }
 
-    .sidebar{
-        border-right:none;
-        border-bottom:1px dashed #c5a059;
-        padding-right:0;
-        padding-bottom:15px;
+    .campaign-card{
+        margin-top:0;
     }
 
+    .chat-log{
+        min-height:390px;
+    }
 }
 
+@media (max-width:640px){
+    .rpg-shell{
+        padding:12px;
+        gap:12px;
+    }
+
+    .brand{
+        align-items:flex-start;
+    }
+
+    .brand-mark{
+        width:44px;
+        height:44px;
+    }
+
+    .control-rail,
+    .story-header,
+    .chat-log,
+    .input-area{
+        padding:16px;
+    }
+
+    .story-header{
+        flex-direction:column;
+    }
+
+    .input-area{
+        grid-template-columns:1fr;
+    }
+
+    .send-button{
+        min-height:48px;
+    }
+}
 </style>
 </head>
 
 <body>
+<div class="rpg-shell">
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                    <path d="M16 3l3.7 7.7 8.3 1.2-6 5.9 1.4 8.2-7.4-3.9L8.6 26l1.4-8.2-6-5.9 8.3-1.2L16 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M16 10.5v8.7M11.7 15h8.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <h1>Santuário do Mestre</h1>
+                <p>Mestre de RPG com IA</p>
+            </div>
+        </div>
 
-<div class="rpg-container">
+        <div class="status-strip">
+            <div class="status-pill" id="connectionStatus" aria-live="polite">
+                <span class="status-dot" aria-hidden="true"></span>
+                Pronto para narrar
+            </div>
+            <div class="status-pill">
+                <span class="status-dot" aria-hidden="true"></span>
+                Node-RED / Gemini
+            </div>
+        </div>
+    </header>
 
-<header>
-    <h1>Santuário do Mestre</h1>
-    <p>Interface de RPG com Inteligência Artificial</p>
-</header>
+    <div class="layout">
+        <aside class="control-rail">
+            <div>
+                <h2 class="section-title">Configuração</h2>
+                <p class="section-note">Defina o sistema, o tom e o local para abrir uma aventura coerente.</p>
+            </div>
 
-<div class="main-content">
+            <div class="field-stack">
+                <div class="form-group">
+                    <label for="sistema">Sistema</label>
+                    <select id="sistema">
+                        <option value="D&D 5e">D&D 5ª Edição</option>
+                        <option value="Pathfinder">Pathfinder</option>
+                        <option value="Tormenta20">Tormenta20</option>
+                        <option value="Call of Cthulhu">Call of Cthulhu</option>
+                    </select>
+                </div>
 
-<aside class="sidebar">
+                <div class="form-group">
+                    <label for="tom">Tom</label>
+                    <select id="tom">
+                        <option value="Epico">Épico</option>
+                        <option value="Sombrio">Sombrio</option>
+                        <option value="Misterio">Mistério</option>
+                        <option value="Comedia">Comédia</option>
+                    </select>
+                </div>
 
-    <h3>Configuração</h3>
+                <div class="form-group">
+                    <label for="local">Local Atual</label>
+                    <input id="local" value="Masmorra de Nahemah">
+                </div>
 
-    <div class="form-group">
-        <label>Sistema</label>
+                <button class="primary-button" id="introButton" type="button" onclick="gerarIntroducao()">
+                    Gerar introdução
+                </button>
+            </div>
 
-        <select id="sistema">
-            <option value="D&D 5e">D&D 5ª Edição</option>
-            <option value="Pathfinder">Pathfinder</option>
-            <option value="Tormenta20">Tormenta20</option>
-            <option value="Call of Cthulhu">Call of Cthulhu</option>
-        </select>
-    </div>
+            <div class="campaign-card">
+                <h3>Campanha ativa</h3>
+                <div class="summary-list">
+                    <div class="summary-item">
+                        <span>Sistema</span>
+                        <strong id="summarySystem">D&D 5ª Edição</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Tom</span>
+                        <strong id="summaryTone">Épico</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Local</span>
+                        <strong id="summaryLocation">Masmorra de Nahemah</strong>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-    <div class="form-group">
-        <label>Tom</label>
+        <main class="story-panel">
+            <div class="story-header">
+                <div class="story-title-group">
+                    <h2>Mesa narrativa</h2>
+                    <p id="campaignLocation">Masmorra de Nahemah</p>
+                </div>
+                <div class="tone-meter" aria-label="Intensidade narrativa">
+                    <div class="meter-bars" aria-hidden="true"><span></span><span></span><span></span></div>
+                    <span id="toneLabel">Épico</span>
+                </div>
+            </div>
 
-        <select id="tom">
-            <option value="Epico">Épico</option>
-            <option value="Sombrio">Sombrio</option>
-            <option value="Misterio">Mistério</option>
-            <option value="Comedia">Comédia</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Local Atual</label>
-
-        <input
-            id="local"
-            value="Masmorra de Nahemah"
-        >
-    </div>
-
-</aside>
-
-<main class="chat-area">
-
-<div class="chat-log" id="chatLog">
-
-<div class="message ia">
-<span class="speaker">🔮 Mestre Arcane</span>
-
-Bem-vindo aventureiro.
+            <section class="chat-log" id="chatLog" aria-live="polite" aria-label="Narrativa da aventura">
+                <article class="message ia">
+                    <span class="speaker">Mestre Arcane</span>
+                    <div class="message-text">Bem-vindo aventureiro.
 
 Diante de você existe uma pesada porta coberta por runas antigas.
 
 O ar está frio e um silêncio estranho domina o corredor.
 
-O que você faz?
-</div>
+O que você faz?</div>
+                </article>
+            </section>
 
-</div>
-
-<div class="input-area">
-
-<textarea
-id="userInput"
-placeholder="Digite sua ação..."
-></textarea>
-
-<button onclick="enviarMensagem()">
-Enviar
-</button>
-
-</div>
-
-</main>
-
-</div>
-
+            <div class="input-area">
+                <label class="sr-only" for="userInput">Digite sua ação</label>
+                <textarea id="userInput" placeholder="Digite sua ação..."></textarea>
+                <button class="send-button" id="sendButton" type="button" onclick="enviarMensagem()">
+                    Enviar
+                </button>
+            </div>
+        </main>
+    </div>
 </div>
 
 <script>
+const fallbackIntroductions = {
+    Epico: "As tochas despertam uma luz antiga nas pedras da masmorra. Ao longe, tambores ecoam como se anunciassem a chegada de um campeão esquecido. A porta diante de você vibra com runas douradas, e uma corrente de ar quente revela o cheiro de metal, poeira e destino. O que você faz?",
+    Sombrio: "A masmorra respira como uma criatura adormecida. Gotas caem em algum lugar invisível, marcando o tempo de forma cruel. A porta à frente está coberta por marcas de unhas e símbolos gastos, e uma sombra parece se mover por baixo dela. O que você faz?",
+    Misterio: "Uma névoa fina rasteja pelo chão da masmorra, escondendo pegadas que não estavam ali há um instante. A porta diante de você traz um selo partido e uma inscrição incompleta, como se alguém tivesse apagado a parte mais importante. O que você faz?",
+    Comedia: "A masmorra tenta parecer ameaçadora, mas uma placa torta na porta avisa: 'Perigo moderado, cuidado com o degrau'. Ainda assim, as runas brilham com energia real, e algo pesado se arrasta do outro lado. O que você faz?"
+};
+
+const fallbackActions = [
+    "Sua ação muda o ritmo da cena. O Mestre Arcane observa as consequências se acumularem: uma passagem se revela, um perigo se aproxima e uma escolha difícil se forma diante do grupo.",
+    "O ambiente responde de imediato. Poeira cai das paredes, um som distante confirma que você chamou atenção, e uma pista útil surge onde antes havia apenas sombra.",
+    "A tentativa avança a história, mas cobra cautela. Você percebe um detalhe novo, evita uma ameaça maior por pouco e sente que a próxima decisão pode definir o rumo da aventura."
+];
+
+const labels = {
+    Epico: "Épico",
+    Sombrio: "Sombrio",
+    Misterio: "Mistério",
+    Comedia: "Comédia"
+};
+
+let introTimer;
+
+function byId(id){
+    return document.getElementById(id);
+}
+
+function campaignPayload(){
+    return {
+        sistema: byId("sistema").value,
+        tom: byId("tom").value,
+        local: byId("local").value.trim() || "Mundo desconhecido"
+    };
+}
+
+function selectedText(selectId){
+    const select = byId(selectId);
+    return select.options[select.selectedIndex].text;
+}
+
+function setStatus(text, variant){
+    const status = byId("connectionStatus");
+    status.lastChild.textContent = " " + text;
+    status.classList.toggle("is-warn", variant === "warn");
+}
+
+function syncSummary(){
+    const payload = campaignPayload();
+    byId("summarySystem").textContent = selectedText("sistema");
+    byId("summaryTone").textContent = labels[payload.tom] || payload.tom;
+    byId("summaryLocation").textContent = payload.local;
+    byId("campaignLocation").textContent = payload.local;
+    byId("toneLabel").textContent = labels[payload.tom] || payload.tom;
+}
+
+function setBusy(isBusy){
+    byId("introButton").disabled = isBusy;
+    byId("sendButton").disabled = isBusy;
+}
+
+function scrollLog(){
+    const chatLog = byId("chatLog");
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function createMessage(type, speaker, text, meta){
+    const message = document.createElement("article");
+    message.className = "message " + type;
+
+    const speakerEl = document.createElement("span");
+    speakerEl.className = "speaker";
+    speakerEl.textContent = speaker;
+
+    const textEl = document.createElement("div");
+    textEl.className = "message-text";
+    textEl.textContent = text;
+
+    message.appendChild(speakerEl);
+    message.appendChild(textEl);
+
+    if(meta){
+        const metaEl = document.createElement("div");
+        metaEl.className = "message-meta";
+        metaEl.textContent = meta;
+        message.appendChild(metaEl);
+    }
+
+    return message;
+}
+
+function replaceMessage(message, type, speaker, text, meta){
+    message.replaceWith(createMessage(type, speaker, text, meta));
+    scrollLog();
+}
+
+function resetLog(){
+    byId("chatLog").replaceChildren();
+}
+
+async function requestNarrative(endpoint, payload){
+    const response = await fetch(endpoint,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+    });
+
+    if(!response.ok){
+        throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+    return data.narrativa || data.message || "O destino permanece incerto.";
+}
+
+function fallbackIntro(tom){
+    return fallbackIntroductions[tom] || fallbackIntroductions.Epico;
+}
+
+function fallbackAction(){
+    return fallbackActions[Math.floor(Math.random() * fallbackActions.length)];
+}
 
 async function gerarIntroducao(){
+    syncSummary();
+    setBusy(true);
+    setStatus("Gerando cenário", "");
+    resetLog();
 
-    const chatLog =
-        document.getElementById("chatLog");
-
-    chatLog.innerHTML = `
-        <div class="message ia">
-            <span class="speaker">🔮 Mestre Arcane</span>
-            Gerando cenário...
-        </div>
-    `;
+    const payload = campaignPayload();
+    const loading = createMessage("ia", "Mestre Arcane", "Abrindo o grimório da campanha...");
+    byId("chatLog").appendChild(loading);
+    scrollLog();
 
     try{
-
-        const resposta =
-            await fetch('/api/introducao',{
-
-                method:'POST',
-
-                headers:{
-                    'Content-Type':'application/json'
-                },
-
-                body:JSON.stringify({
-
-                    sistema:
-                        document.getElementById("sistema").value,
-
-                    tom:
-                        document.getElementById("tom").value,
-
-                    local:
-                        document.getElementById("local").value
-
-                })
-
-            });
-
-        const dados =
-            await resposta.json();
-
-        chatLog.innerHTML = `
-            <div class="message ia">
-                <span class="speaker">🔮 Mestre Arcane</span>
-                ${dados.narrativa}
-            </div>
-        `;
-
+        const narrativa = await requestNarrative("/api/introducao",payload);
+        replaceMessage(loading,"ia","Mestre Arcane",narrativa);
+        setStatus("Conectado ao Mestre", "");
     }
-    catch(erro){
-
-        chatLog.innerHTML = `
-            <div class="message ia">
-                <span class="speaker">⚠️ Erro</span>
-                Não foi possível gerar a introdução.
-            </div>
-        `;
-
-        console.error(erro);
-
+    catch(error){
+        replaceMessage(
+            loading,
+            "ia",
+            "Mestre Arcane",
+            fallbackIntro(payload.tom),
+            "Prévia local enquanto a API do Node-RED/Gemini não responde."
+        );
+        setStatus("Prévia local", "warn");
+        console.warn("API do Node-RED indisponível; usando introdução local.", error.message);
     }
-
+    finally{
+        setBusy(false);
+    }
 }
 
 async function enviarMensagem(){
-
-    const input =
-        document.getElementById("userInput");
-
-    const chatLog =
-        document.getElementById("chatLog");
-
-    const acao =
-        input.value.trim();
+    const input = byId("userInput");
+    const acao = input.value.trim();
 
     if(!acao){
+        input.focus();
         return;
     }
 
-    const playerMsg =
-        document.createElement("div");
+    syncSummary();
+    setBusy(true);
 
-    playerMsg.className =
-        "message player";
-
-    playerMsg.innerHTML =
-        `<span class="speaker">🛡️ Jogador</span>${acao}`;
-
-    chatLog.appendChild(playerMsg);
-
+    byId("chatLog").appendChild(createMessage("player","Jogador",acao));
     input.value = "";
 
-    const loading =
-        document.createElement("div");
-
-    loading.className =
-        "message ia";
-
-    loading.innerHTML =
-        `<span class="speaker">🔮 Mestre Arcane</span>Pensando...</span>`;
-
-    chatLog.appendChild(loading);
-
-    chatLog.scrollTop =
-        chatLog.scrollHeight;
+    const loading = createMessage("ia","Mestre Arcane","Consultando dados, mapas e presságios...");
+    byId("chatLog").appendChild(loading);
+    scrollLog();
 
     try{
-
-        const resposta =
-            await fetch('/api/rpg',{
-
-                method:'POST',
-
-                headers:{
-                    'Content-Type':'application/json'
-                },
-
-                body:JSON.stringify({
-
-                    acao:acao,
-
-                    sistema:
-                        document.getElementById("sistema").value,
-
-                    tom:
-                        document.getElementById("tom").value,
-
-                    local:
-                        document.getElementById("local").value
-
-                })
-
-            });
-
-        const dados =
-            await resposta.json();
-
-        loading.innerHTML =
-        `<span class="speaker">🔮 Mestre Arcane</span>
-        ${dados.narrativa || "O destino permanece incerto."}`;
-
+        const narrativa = await requestNarrative("/api/rpg",{
+            acao:acao,
+            ...campaignPayload()
+        });
+        replaceMessage(loading,"ia","Mestre Arcane",narrativa);
+        setStatus("Conectado ao Mestre", "");
     }
-    catch(erro){
-
-        loading.innerHTML =
-        `<span class="speaker">⚠️ Erro</span>
-        Não foi possível contactar o Mestre Arcane.`;
-
-        console.error(erro);
-
+    catch(error){
+        replaceMessage(
+            loading,
+            "ia error",
+            "Mestre Arcane",
+            fallbackAction(),
+            "Resposta simulada para manter a mesa jogável sem conexão com a API."
+        );
+        setStatus("Prévia local", "warn");
+        console.warn("API do Node-RED indisponível; usando resposta local.", error.message);
     }
-
-    chatLog.scrollTop =
-        chatLog.scrollHeight;
+    finally{
+        setBusy(false);
+        input.focus();
+    }
 }
 
-document
-.getElementById("userInput")
-.addEventListener("keydown",function(e){
+function scheduleIntroducao(){
+    window.clearTimeout(introTimer);
+    introTimer = window.setTimeout(gerarIntroducao,300);
+}
 
-    if(e.key === "Enter" && !e.shiftKey){
-
-        e.preventDefault();
-
-        enviarMensagem();
-
-    }
-
+["sistema","tom"].forEach(function(id){
+    byId(id).addEventListener("change",scheduleIntroducao);
 });
 
-document
-.getElementById("sistema")
-.addEventListener("change",gerarIntroducao);
+byId("local").addEventListener("change",scheduleIntroducao);
+byId("local").addEventListener("input",syncSummary);
 
-document
-.getElementById("tom")
-.addEventListener("change",gerarIntroducao);
+byId("userInput").addEventListener("keydown",function(event){
+    if(event.key === "Enter" && !event.shiftKey){
+        event.preventDefault();
+        enviarMensagem();
+    }
+});
 
-document
-.getElementById("local")
-.addEventListener("change",gerarIntroducao);
-
-window.onload = gerarIntroducao;
-
+window.addEventListener("load",function(){
+    syncSummary();
+    gerarIntroducao();
+});
 </script>
-
 </body>
 </html>

@@ -12,9 +12,17 @@ Este projeto foi desenvolvido para a disciplina de **Engenharia de Prompt e Agen
 
 ---
 
+# Prévia do Design
+
+![Prévia da interface Santuário do Mestre](docs/design-preview.png)
+
+---
+
 # Funcionalidades
 
 * Interface web temática de RPG
+* Layout responsivo para desktop e mobile
+* Prévia local quando a API ainda não estiver ativa
 * Integração com Google Gemini
 * Geração automática de cenários
 * Geração dinâmica de narrativas
@@ -269,10 +277,15 @@ A criatura parece estar se aproximando da fortaleza.
 
 ```text
 .
-├── flow.json
+├── docs/
+│   └── design-preview.png
+├── flows.json
+├── formulario.html
 ├── README.md
-└── interface.html
+└── .flows.json.backup
 ```
+
+O arquivo `formulario.html` é a versão editável da interface. O mesmo HTML está sincronizado dentro do nó `Interface RPG` em `flows.json`, que é o fluxo importado no Node-RED.
 
 ---
 
