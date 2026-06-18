@@ -1,0 +1,244 @@
+[
+    {
+        "id": "f4adac4313098acc",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f6d60eb1b6ee0173",
+        "type": "http in",
+        "z": "f4adac4313098acc",
+        "name": "Receber Ação do Jogador",
+        "url": "/api/rpg",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "c96554036639994d"
+            ]
+        ]
+    },
+    {
+        "id": "c96554036639994d",
+        "type": "function",
+        "z": "f4adac4313098acc",
+        "name": "Montar prompt",
+        "func": "const acao = msg.payload.acao;\nconst sistema = msg.payload.sistema || \"D&D 5e\";\nconst tom = msg.payload.tom || \"Fantasia\";\nconst local = msg.payload.local || \"Mundo desconhecido\";\n\nconst prompt = `\nVocê é \"Mestre Arcane\", um experiente Mestre de RPG especializado em criar aventuras envolventes, coerentes e imersivas.\n\nREGRAS IMPORTANTES:\n\n1. Nunca controle as ações do jogador.\n2. Apenas descreva as consequências da ação realizada.\n3. Seja criativo, mas mantenha coerência com o cenário.\n4. Gere respostas entre 50 e 150 palavras.\n5. Descreva ambientes, sons, emoções e consequências.\n6. Se a ação for impossível, explique por que falhou.\n7. Sempre avance a história.\n8. Nunca saia do personagem de Mestre de RPG.\n9. Não explique regras nem diga que é uma IA.\n10. Responda SOMENTE com JSON válido.\n\nCONFIGURAÇÃO DA CAMPANHA\n\nSistema: ${sistema}\nTom: ${tom}\nLocal atual: ${local}\n\nAÇÃO DO JOGADOR\n\n${acao}\n\nANALISE A AÇÃO E DETERMINE:\n\n- Grau de sucesso\n- Consequências\n- Ganho de experiência\n- Dano recebido\n- Recompensas encontradas\n\nRESPONDA EXATAMENTE NESTE FORMATO:\n\n{\n  \"resultado\":\"sucesso|falha|critico\",\n  \"vida_perdida\":0,\n  \"xp_ganho\":0,\n  \"ouro_ganho\":0,\n  \"narrativa\":\"texto da aventura\"\n}\n\nNÃO adicione markdown.\nNÃO use blocos \\`\\`\\`.\nNÃO escreva explicações.\nAPENAS JSON.\n`;\n\nmsg.payload = {\n    contents: [\n        {\n            parts: [\n                {\n                    text: prompt\n                }\n            ]\n        }\n    ],\n    generationConfig: {\n        temperature: 0.8\n    }\n};\n\nconst API_KEY = \"SUA_CHAVE_API_AQUI\";\n\nmsg.url =\"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=\" + API_KEY;\n\nmsg.headers = {\n    \"Content-Type\":\"application/json\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 160,
+        "wires": [
+            [
+                "541b9cc0083dc021"
+            ]
+        ]
+    },
+    {
+        "id": "541b9cc0083dc021",
+        "type": "http request",
+        "z": "f4adac4313098acc",
+        "name": "Chamar mestre de IA (gemini)",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 770,
+        "y": 160,
+        "wires": [
+            [
+                "dae8cd8ea6fb8ca4"
+            ]
+        ]
+    },
+    {
+        "id": "f7f0a7ef6fb3d4e7",
+        "type": "http in",
+        "z": "f4adac4313098acc",
+        "name": "Abrir Interface RPG",
+        "url": "/rpg",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 300,
+        "wires": [
+            [
+                "67f331fcacbfe2c1"
+            ]
+        ]
+    },
+    {
+        "id": "67f331fcacbfe2c1",
+        "type": "template",
+        "z": "f4adac4313098acc",
+        "name": "Interface RPG",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n<title>Santuário do Mestre - IA RPG</title>\n\n<style>\n\n@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Montserrat:wght@400;600&display=swap');\n\n:root{\n    --bg-color:#120c06;\n    --panel-bg:rgba(26,18,10,0.95);\n    --border-gold:#c5a059;\n    --text-main:#e6dfd3;\n    --text-accent:#ff4500;\n}\n\nbody{\n    background:#120c06;\n    color:#e6dfd3;\n    font-family:'Montserrat',sans-serif;\n    margin:0;\n    padding:20px;\n    display:flex;\n    justify-content:center;\n    align-items:center;\n    min-height:100vh;\n    background-image:radial-gradient(circle,#2c1d11 0%,#120c06 100%);\n}\n\n.rpg-container{\n    width:100%;\n    max-width:1000px;\n    background:rgba(26,18,10,0.95);\n    border:3px double #c5a059;\n    border-radius:8px;\n    padding:25px;\n    box-sizing:border-box;\n}\n\nheader{\n    text-align:center;\n    border-bottom:2px solid #c5a059;\n    padding-bottom:15px;\n    margin-bottom:20px;\n}\n\nheader h1{\n    font-family:'Cinzel Decorative',serif;\n    color:#c5a059;\n    margin:0;\n}\n\nheader p{\n    color:#aaa;\n}\n\n.main-content{\n    display:grid;\n    grid-template-columns:1fr 3fr;\n    gap:20px;\n}\n\n.sidebar{\n    border-right:1px dashed #c5a059;\n    padding-right:20px;\n}\n\n.sidebar h3{\n    color:#c5a059;\n}\n\n.form-group{\n    margin-bottom:15px;\n}\n\n.form-group label{\n    display:block;\n    margin-bottom:5px;\n}\n\n.form-group select,\n.form-group input{\n    width:100%;\n    background:#2a1a0e;\n    border:1px solid #c5a059;\n    color:white;\n    padding:8px;\n    box-sizing:border-box;\n}\n\n.chat-area{\n    display:flex;\n    flex-direction:column;\n    height:550px;\n}\n\n.chat-log{\n    flex:1;\n    background:rgba(0,0,0,0.4);\n    border:1px solid #c5a059;\n    padding:15px;\n    overflow-y:auto;\n    margin-bottom:15px;\n\n    font-family:'Segoe UI',sans-serif;\n    font-size:16px;\n    line-height:1.7;\n}\n\n.message{\n    margin-bottom:15px;\n    padding:10px;\n}\n\n.message.ia{\n    background:rgba(197,160,89,0.08);\n    border-left:3px solid #c5a059;\n}\n\n.message.player{\n    background:rgba(255,69,0,0.08);\n    border-left:3px solid #ff4500;\n}\n\n.speaker{\n    display:block;\n    font-weight:bold;\n    margin-bottom:6px;\n}\n\n.message.ia .speaker{\n    color:#c5a059;\n}\n\n.message.player .speaker{\n    color:#ff4500;\n}\n\n.input-area{\n    display:flex;\n    gap:10px;\n}\n\n.input-area textarea{\n    flex:1;\n    resize:none;\n    height:60px;\n    background:#2a1a0e;\n    color:white;\n    border:1px solid #c5a059;\n    padding:10px;\n}\n\n.input-area button{\n    background:#6e1313;\n    border:1px solid #c5a059;\n    color:white;\n    padding:0 25px;\n    cursor:pointer;\n    font-size:18px;\n}\n\n.input-area button:hover{\n    opacity:0.9;\n}\n\n::-webkit-scrollbar{\n    width:8px;\n}\n\n::-webkit-scrollbar-thumb{\n    background:#c5a059;\n}\n\n@media(max-width:768px){\n\n    .main-content{\n        grid-template-columns:1fr;\n    }\n\n    .sidebar{\n        border-right:none;\n        border-bottom:1px dashed #c5a059;\n        padding-right:0;\n        padding-bottom:15px;\n    }\n\n}\n\n</style>\n</head>\n\n<body>\n\n<div class=\"rpg-container\">\n\n<header>\n    <h1>Santuário do Mestre</h1>\n    <p>Interface de RPG com Inteligência Artificial</p>\n</header>\n\n<div class=\"main-content\">\n\n<aside class=\"sidebar\">\n\n    <h3>Configuração</h3>\n\n    <div class=\"form-group\">\n        <label>Sistema</label>\n\n        <select id=\"sistema\">\n            <option value=\"D&D 5e\">D&D 5ª Edição</option>\n            <option value=\"Pathfinder\">Pathfinder</option>\n            <option value=\"Tormenta20\">Tormenta20</option>\n            <option value=\"Call of Cthulhu\">Call of Cthulhu</option>\n        </select>\n    </div>\n\n    <div class=\"form-group\">\n        <label>Tom</label>\n\n        <select id=\"tom\">\n            <option value=\"Epico\">Épico</option>\n            <option value=\"Sombrio\">Sombrio</option>\n            <option value=\"Misterio\">Mistério</option>\n            <option value=\"Comedia\">Comédia</option>\n        </select>\n    </div>\n\n    <div class=\"form-group\">\n        <label>Local Atual</label>\n\n        <input\n            id=\"local\"\n            value=\"Masmorra de Nahemah\"\n        >\n    </div>\n\n</aside>\n\n<main class=\"chat-area\">\n\n<div class=\"chat-log\" id=\"chatLog\">\n\n<div class=\"message ia\">\n<span class=\"speaker\">🔮 Mestre Arcane</span>\n\nBem-vindo aventureiro.\n\nDiante de você existe uma pesada porta coberta por runas antigas.\n\nO ar está frio e um silêncio estranho domina o corredor.\n\nO que você faz?\n</div>\n\n</div>\n\n<div class=\"input-area\">\n\n<textarea\nid=\"userInput\"\nplaceholder=\"Digite sua ação...\"\n></textarea>\n\n<button onclick=\"enviarMensagem()\">\nEnviar\n</button>\n\n</div>\n\n</main>\n\n</div>\n\n</div>\n\n<script>\n\nasync function gerarIntroducao(){\n\n    const chatLog =\n        document.getElementById(\"chatLog\");\n\n    chatLog.innerHTML = `\n        <div class=\"message ia\">\n            <span class=\"speaker\">🔮 Mestre Arcane</span>\n            Gerando cenário...\n        </div>\n    `;\n\n    try{\n\n        const resposta =\n            await fetch('/api/introducao',{\n\n                method:'POST',\n\n                headers:{\n                    'Content-Type':'application/json'\n                },\n\n                body:JSON.stringify({\n\n                    sistema:\n                        document.getElementById(\"sistema\").value,\n\n                    tom:\n                        document.getElementById(\"tom\").value,\n\n                    local:\n                        document.getElementById(\"local\").value\n\n                })\n\n            });\n\n        const dados =\n            await resposta.json();\n\n        chatLog.innerHTML = `\n            <div class=\"message ia\">\n                <span class=\"speaker\">🔮 Mestre Arcane</span>\n                ${dados.narrativa}\n            </div>\n        `;\n\n    }\n    catch(erro){\n\n        chatLog.innerHTML = `\n            <div class=\"message ia\">\n                <span class=\"speaker\">⚠️ Erro</span>\n                Não foi possível gerar a introdução.\n            </div>\n        `;\n\n        console.error(erro);\n\n    }\n\n}\n\nasync function enviarMensagem(){\n\n    const input =\n        document.getElementById(\"userInput\");\n\n    const chatLog =\n        document.getElementById(\"chatLog\");\n\n    const acao =\n        input.value.trim();\n\n    if(!acao){\n        return;\n    }\n\n    const playerMsg =\n        document.createElement(\"div\");\n\n    playerMsg.className =\n        \"message player\";\n\n    playerMsg.innerHTML =\n        `<span class=\"speaker\">🛡️ Jogador</span>${acao}`;\n\n    chatLog.appendChild(playerMsg);\n\n    input.value = \"\";\n\n    const loading =\n        document.createElement(\"div\");\n\n    loading.className =\n        \"message ia\";\n\n    loading.innerHTML =\n        `<span class=\"speaker\">🔮 Mestre Arcane</span>Pensando...</span>`;\n\n    chatLog.appendChild(loading);\n\n    chatLog.scrollTop =\n        chatLog.scrollHeight;\n\n    try{\n\n        const resposta =\n            await fetch('/api/rpg',{\n\n                method:'POST',\n\n                headers:{\n                    'Content-Type':'application/json'\n                },\n\n                body:JSON.stringify({\n\n                    acao:acao,\n\n                    sistema:\n                        document.getElementById(\"sistema\").value,\n\n                    tom:\n                        document.getElementById(\"tom\").value,\n\n                    local:\n                        document.getElementById(\"local\").value\n\n                })\n\n            });\n\n        const dados =\n            await resposta.json();\n\n        loading.innerHTML =\n        `<span class=\"speaker\">🔮 Mestre Arcane</span>\n        ${dados.narrativa || \"O destino permanece incerto.\"}`;\n\n    }\n    catch(erro){\n\n        loading.innerHTML =\n        `<span class=\"speaker\">⚠️ Erro</span>\n        Não foi possível contactar o Mestre Arcane.`;\n\n        console.error(erro);\n\n    }\n\n    chatLog.scrollTop =\n        chatLog.scrollHeight;\n}\n\ndocument\n.getElementById(\"userInput\")\n.addEventListener(\"keydown\",function(e){\n\n    if(e.key === \"Enter\" && !e.shiftKey){\n\n        e.preventDefault();\n\n        enviarMensagem();\n\n    }\n\n});\n\ndocument\n.getElementById(\"sistema\")\n.addEventListener(\"change\",gerarIntroducao);\n\ndocument\n.getElementById(\"tom\")\n.addEventListener(\"change\",gerarIntroducao);\n\ndocument\n.getElementById(\"local\")\n.addEventListener(\"change\",gerarIntroducao);\n\nwindow.onload = gerarIntroducao;\n\n</script>\n\n</body>\n</html>",
+        "output": "str",
+        "x": 470,
+        "y": 300,
+        "wires": [
+            [
+                "5b5463123c98e82d"
+            ]
+        ]
+    },
+    {
+        "id": "5b5463123c98e82d",
+        "type": "http response",
+        "z": "f4adac4313098acc",
+        "name": " Exibir Página",
+        "statusCode": "",
+        "headers": {},
+        "x": 710,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "dae8cd8ea6fb8ca4",
+        "type": "function",
+        "z": "f4adac4313098acc",
+        "name": "Interpretar Resposta IA",
+        "func": "try {\n\n    const texto =\n        msg.payload.candidates[0]\n        .content.parts[0]\n        .text;\n\n    const limpo = texto\n        .replace(/```json/gi, \"\")\n        .replace(/```/g, \"\")\n        .trim();\n\n    const resposta = JSON.parse(limpo);\n\n    msg.payload = resposta;\n\n}\ncatch (erro) {\n\n    msg.payload = {\n        resultado: \"erro\",\n        narrativa: \"O Mestre Arcane não conseguiu interpretar a resposta da IA.\",\n        erro: erro.message\n    };\n\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 60,
+        "wires": [
+            [
+                "039002679e4d08db"
+            ]
+        ]
+    },
+    {
+        "id": "039002679e4d08db",
+        "type": "http response",
+        "z": "f4adac4313098acc",
+        "name": "Responder ao Jogador",
+        "statusCode": "",
+        "headers": {},
+        "x": 950,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "1de805a290339c22",
+        "type": "http in",
+        "z": "f4adac4313098acc",
+        "name": "Gerar Introdução",
+        "url": "/api/introducao",
+        "method": "post",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 250,
+        "y": 440,
+        "wires": [
+            [
+                "16fdfdee75459a07"
+            ]
+        ]
+    },
+    {
+        "id": "16fdfdee75459a07",
+        "type": "function",
+        "z": "f4adac4313098acc",
+        "name": "Montar Prompt Introdução",
+        "func": "const sistema = msg.payload.sistema;\nconst tom = msg.payload.tom;\nconst local = msg.payload.local;\n\nconst prompt = `\nVocê é um mestre de RPG profissional.\n\nCrie uma introdução curta para uma aventura.\n\nSistema: ${sistema}\nTom: ${tom}\nLocal: ${local}\n\nRegras:\n\n- Máximo de 120 palavras.\n- Seja imersivo.\n- Descreva o ambiente.\n- Termine perguntando o que o jogador faz.\n- Não use listas.\n\nResponda apenas com a narrativa.\n`;\n\nconst API_KEY = \"SUA_CHAVE_API_AQUI\";\n\nmsg.payload = {\n    contents: [\n        {\n            parts: [\n                {\n                    text: prompt\n                }\n            ]\n        }\n    ]\n};\n\nmsg.url =\n\"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=\"\n+ API_KEY;\n\nmsg.headers = {\n    \"Content-Type\":\"application/json\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 440,
+        "wires": [
+            [
+                "16df498202150ca0"
+            ]
+        ]
+    },
+    {
+        "id": "16df498202150ca0",
+        "type": "http request",
+        "z": "f4adac4313098acc",
+        "name": "Chamar mestre de IA (gemini)",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 590,
+        "y": 520,
+        "wires": [
+            [
+                "70d906d509adb0f1"
+            ]
+        ]
+    },
+    {
+        "id": "70d906d509adb0f1",
+        "type": "function",
+        "z": "f4adac4313098acc",
+        "name": "Interpretar Introdução",
+        "func": "const texto =\nmsg.payload.candidates[0]\n.content.parts[0]\n.text;\n\nmsg.payload = {\n    narrativa: texto\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 460,
+        "wires": [
+            [
+                "9bdd3997b464cdbb"
+            ]
+        ]
+    },
+    {
+        "id": "9bdd3997b464cdbb",
+        "type": "http response",
+        "z": "f4adac4313098acc",
+        "name": "Enviar Introdução",
+        "statusCode": "",
+        "headers": {},
+        "x": 1120,
+        "y": 420,
+        "wires": []
+    }
+]

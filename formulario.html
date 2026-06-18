@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Santuário do Mestre - IA RPG</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Montserrat:wght@400;600&display=swap');
+
+:root{
+    --bg-color:#120c06;
+    --panel-bg:rgba(26,18,10,0.95);
+    --border-gold:#c5a059;
+    --text-main:#e6dfd3;
+    --text-accent:#ff4500;
+}
+
+body{
+    background:#120c06;
+    color:#e6dfd3;
+    font-family:'Montserrat',sans-serif;
+    margin:0;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background-image:radial-gradient(circle,#2c1d11 0%,#120c06 100%);
+}
+
+.rpg-container{
+    width:100%;
+    max-width:1000px;
+    background:rgba(26,18,10,0.95);
+    border:3px double #c5a059;
+    border-radius:8px;
+    padding:25px;
+    box-sizing:border-box;
+}
+
+header{
+    text-align:center;
+    border-bottom:2px solid #c5a059;
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+header h1{
+    font-family:'Cinzel Decorative',serif;
+    color:#c5a059;
+    margin:0;
+}
+
+header p{
+    color:#aaa;
+}
+
+.main-content{
+    display:grid;
+    grid-template-columns:1fr 3fr;
+    gap:20px;
+}
+
+.sidebar{
+    border-right:1px dashed #c5a059;
+    padding-right:20px;
+}
+
+.sidebar h3{
+    color:#c5a059;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:5px;
+}
+
+.form-group select,
+.form-group input{
+    width:100%;
+    background:#2a1a0e;
+    border:1px solid #c5a059;
+    color:white;
+    padding:8px;
+    box-sizing:border-box;
+}
+
+.chat-area{
+    display:flex;
+    flex-direction:column;
+    height:550px;
+}
+
+.chat-log{
+    flex:1;
+    background:rgba(0,0,0,0.4);
+    border:1px solid #c5a059;
+    padding:15px;
+    overflow-y:auto;
+    margin-bottom:15px;
+
+    font-family:'Segoe UI',sans-serif;
+    font-size:16px;
+    line-height:1.7;
+}
+
+.message{
+    margin-bottom:15px;
+    padding:10px;
+}
+
+.message.ia{
+    background:rgba(197,160,89,0.08);
+    border-left:3px solid #c5a059;
+}
+
+.message.player{
+    background:rgba(255,69,0,0.08);
+    border-left:3px solid #ff4500;
+}
+
+.speaker{
+    display:block;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.message.ia .speaker{
+    color:#c5a059;
+}
+
+.message.player .speaker{
+    color:#ff4500;
+}
+
+.input-area{
+    display:flex;
+    gap:10px;
+}
+
+.input-area textarea{
+    flex:1;
+    resize:none;
+    height:60px;
+    background:#2a1a0e;
+    color:white;
+    border:1px solid #c5a059;
+    padding:10px;
+}
+
+.input-area button{
+    background:#6e1313;
+    border:1px solid #c5a059;
+    color:white;
+    padding:0 25px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.input-area button:hover{
+    opacity:0.9;
+}
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#c5a059;
+}
+
+@media(max-width:768px){
+
+    .main-content{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        border-right:none;
+        border-bottom:1px dashed #c5a059;
+        padding-right:0;
+        padding-bottom:15px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="rpg-container">
+
+<header>
+    <h1>Santuário do Mestre</h1>
+    <p>Interface de RPG com Inteligência Artificial</p>
+</header>
+
+<div class="main-content">
+
+<aside class="sidebar">
+
+    <h3>Configuração</h3>
+
+    <div class="form-group">
+        <label>Sistema</label>
+
+        <select id="sistema">
+            <option value="D&D 5e">D&D 5ª Edição</option>
+            <option value="Pathfinder">Pathfinder</option>
+            <option value="Tormenta20">Tormenta20</option>
+            <option value="Call of Cthulhu">Call of Cthulhu</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Tom</label>
+
+        <select id="tom">
+            <option value="Epico">Épico</option>
+            <option value="Sombrio">Sombrio</option>
+            <option value="Misterio">Mistério</option>
+            <option value="Comedia">Comédia</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Local Atual</label>
+
+        <input
+            id="local"
+            value="Masmorra de Nahemah"
+        >
+    </div>
+
+</aside>
+
+<main class="chat-area">
+
+<div class="chat-log" id="chatLog">
+
+<div class="message ia">
+<span class="speaker">🔮 Mestre Arcane</span>
+
+Bem-vindo aventureiro.
+
+Diante de você existe uma pesada porta coberta por runas antigas.
+
+O ar está frio e um silêncio estranho domina o corredor.
+
+O que você faz?
+</div>
+
+</div>
+
+<div class="input-area">
+
+<textarea
+id="userInput"
+placeholder="Digite sua ação..."
+></textarea>
+
+<button onclick="enviarMensagem()">
+Enviar
+</button>
+
+</div>
+
+</main>
+
+</div>
+
+</div>
+
+<script>
+
+async function gerarIntroducao(){
+
+    const chatLog =
+        document.getElementById("chatLog");
+
+    chatLog.innerHTML = `
+        <div class="message ia">
+            <span class="speaker">🔮 Mestre Arcane</span>
+            Gerando cenário...
+        </div>
+    `;
+
+    try{
+
+        const resposta =
+            await fetch('/api/introducao',{
+
+                method:'POST',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify({
+
+                    sistema:
+                        document.getElementById("sistema").value,
+
+                    tom:
+                        document.getElementById("tom").value,
+
+                    local:
+                        document.getElementById("local").value
+
+                })
+
+            });
+
+        const dados =
+            await resposta.json();
+
+        chatLog.innerHTML = `
+            <div class="message ia">
+                <span class="speaker">🔮 Mestre Arcane</span>
+                ${dados.narrativa}
+            </div>
+        `;
+
+    }
+    catch(erro){
+
+        chatLog.innerHTML = `
+            <div class="message ia">
+                <span class="speaker">⚠️ Erro</span>
+                Não foi possível gerar a introdução.
+            </div>
+        `;
+
+        console.error(erro);
+
+    }
+
+}
+
+async function enviarMensagem(){
+
+    const input =
+        document.getElementById("userInput");
+
+    const chatLog =
+        document.getElementById("chatLog");
+
+    const acao =
+        input.value.trim();
+
+    if(!acao){
+        return;
+    }
+
+    const playerMsg =
+        document.createElement("div");
+
+    playerMsg.className =
+        "message player";
+
+    playerMsg.innerHTML =
+        `<span class="speaker">🛡️ Jogador</span>${acao}`;
+
+    chatLog.appendChild(playerMsg);
+
+    input.value = "";
+
+    const loading =
+        document.createElement("div");
+
+    loading.className =
+        "message ia";
+
+    loading.innerHTML =
+        `<span class="speaker">🔮 Mestre Arcane</span>Pensando...</span>`;
+
+    chatLog.appendChild(loading);
+
+    chatLog.scrollTop =
+        chatLog.scrollHeight;
+
+    try{
+
+        const resposta =
+            await fetch('/api/rpg',{
+
+                method:'POST',
+
+                headers:{
+                    'Content-Type':'application/json'
+                },
+
+                body:JSON.stringify({
+
+                    acao:acao,
+
+                    sistema:
+                        document.getElementById("sistema").value,
+
+                    tom:
+                        document.getElementById("tom").value,
+
+                    local:
+                        document.getElementById("local").value
+
+                })
+
+            });
+
+        const dados =
+            await resposta.json();
+
+        loading.innerHTML =
+        `<span class="speaker">🔮 Mestre Arcane</span>
+        ${dados.narrativa || "O destino permanece incerto."}`;
+
+    }
+    catch(erro){
+
+        loading.innerHTML =
+        `<span class="speaker">⚠️ Erro</span>
+        Não foi possível contactar o Mestre Arcane.`;
+
+        console.error(erro);
+
+    }
+
+    chatLog.scrollTop =
+        chatLog.scrollHeight;
+}
+
+document
+.getElementById("userInput")
+.addEventListener("keydown",function(e){
+
+    if(e.key === "Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        enviarMensagem();
+
+    }
+
+});
+
+document
+.getElementById("sistema")
+.addEventListener("change",gerarIntroducao);
+
+document
+.getElementById("tom")
+.addEventListener("change",gerarIntroducao);
+
+document
+.getElementById("local")
+.addEventListener("change",gerarIntroducao);
+
+window.onload = gerarIntroducao;
+
+</script>
+
+</body>
+</html>
